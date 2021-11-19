@@ -3,13 +3,18 @@ import "regenerator-runtime/runtime";
 const [canvas1, canvas2] = document.querySelectorAll("canvas");
 const ctx1 = canvas1.getContext("2d");
 const ctx2 = canvas2.getContext("2d");
-const unitSize = 100;
+const unitSize = 150;
+const bounds = {};
 
 function resize() {
   canvas1.width = window.innerWidth;
   canvas1.height = window.innerHeight;
   canvas2.width = window.innerWidth;
   canvas2.height = window.innerHeight;
+  bounds.left = -canvas1.width / 2;
+  bounds.right = canvas1.width / 2;
+  bounds.top = -canvas1.height + unitSize;
+  bounds.bottom = canvas1.height - unitSize;
   drawGrid();
 }
 addEventListener("resize", resize);
@@ -18,25 +23,25 @@ resize();
 function drawGrid() {
   ctx1.strokeStyle = "#333333";
   ctx1.resetTransform();
-  ctx1.translate(canvas1.width / 2, canvas1.height / 2);
-  for (let x = 0; x < canvas1.width / 2; x += unitSize) {
+  ctx1.translate(bounds.right, bounds.bottom);
+  for (let x = 0; x < bounds.right; x += unitSize) {
     ctx1.beginPath();
-    ctx1.moveTo(x, -canvas1.height / 2);
-    ctx1.lineTo(x, canvas1.height / 2);
+    ctx1.moveTo(x, bounds.top);
+    ctx1.lineTo(x, bounds.bottom);
     ctx1.stroke();
     ctx1.beginPath();
-    ctx1.moveTo(-x, -canvas1.height / 2);
-    ctx1.lineTo(-x, canvas1.height / 2);
+    ctx1.moveTo(-x, bounds.top);
+    ctx1.lineTo(-x, bounds.bottom);
     ctx1.stroke();
   }
-  for (let y = 0; y < canvas1.height / 2; y += unitSize) {
+  for (let y = 0; y < bounds.bottom; y += unitSize) {
     ctx1.beginPath();
-    ctx1.moveTo(-canvas1.width / 2, y);
-    ctx1.lineTo(canvas1.width / 2, y);
+    ctx1.moveTo(bounds.left, y);
+    ctx1.lineTo(bounds.right, y);
     ctx1.stroke();
     ctx1.beginPath();
-    ctx1.moveTo(-canvas1.width / 2, -y);
-    ctx1.lineTo(canvas1.width / 2, -y);
+    ctx1.moveTo(bounds.left, -y);
+    ctx1.lineTo(bounds.right, -y);
     ctx1.stroke();
   }
 }
@@ -47,7 +52,7 @@ function drawRectangle({ x, y }) {
   const rads = Math.atan2(y, x);
   ctx2.resetTransform();
   ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-  ctx2.translate(canvas1.width / 2, canvas1.height / 2);
+  ctx2.translate(bounds.right, bounds.bottom);
   ctx2.rotate(rads);
   ctx2.strokeStyle = "white";
   ctx2.strokeWidth = 2;
@@ -80,7 +85,7 @@ async function draw() {
     const point = drawRectangle({ x: x * unitSize, y });
     ctx1.lineTo(point.x, point.y);
     ctx1.stroke();
-    await sleep(100);
+    await sleep(50);
   }
 
   for await (let i of [0, -1, 1, -2, 2, -3, 3, -4, 4, -5]) {
@@ -148,8 +153,8 @@ async function draw() {
 
   addEventListener("mousemove", (event) => {
     drawRectangle({
-      x: event.x - canvas2.width / 2,
-      y: event.y - canvas2.height / 2,
+      x: event.x + bounds.left,
+      y: event.y + bounds.top,
     });
   });
 }
