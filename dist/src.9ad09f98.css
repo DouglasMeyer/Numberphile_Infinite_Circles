@@ -1,0 +1,13 @@
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+canvas:first-child {
+  background-color: black;
+}
+
+
+/*# sourceMappingURL=/src.9ad09f98.css.map */
